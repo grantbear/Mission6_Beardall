@@ -3,14 +3,17 @@
 *@
 @{
 }
-@model Movie
+@model Mission6_Beardall.Models.Movie
+
 <div class="text-center">
     <h2>Suggest a Film</h2>
 
-        <form method="post">
-        <!-- Category (Required) -->
-        <label asp-for="Category"></label>
-        <input asp-for="Category" class="form-control" required>
+    <form method="post">
+        <!-- Category (Dropdown Selection) -->
+        <label asp-for="CategoryId"></label>
+        <select asp-for="CategoryId" class="form-control" required asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "CategoryName"))">
+            <option value="">-- Select a Category --</option>
+        </select>
         <br>
 
         <!-- Title (Required) -->
@@ -38,7 +41,7 @@
         </select>
         <br>
 
-        <!-- Edited (Yes/No) - Not Required -->
+        <!-- Edited (Yes/No) -->
         <label asp-for="Edited"></label>
         <div>
             <input asp-for="Edited" type="radio" value="true"> Yes
@@ -49,6 +52,11 @@
         <!-- Lent To (Optional) -->
         <label asp-for="LentTo"></label>
         <input asp-for="LentTo" class="form-control">
+        <br>
+
+        <!-- Copied To Plex (Optional) -->
+        <label asp-for="CopiedToPlex"></label>
+        <input asp-for="CopiedToPlex" class="form-control">
         <br>
 
         <!-- Notes (Optional, Max 25 Characters) -->
