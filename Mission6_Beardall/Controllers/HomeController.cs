@@ -40,17 +40,17 @@ namespace Mission6_Beardall.Controllers
         public IActionResult Suggestion()
         {
             var categories = _context.Categories.ToList();
+
             if (categories == null || !categories.Any())
             {
                 categories = new List<Category> { new Category { CategoryId = 0, CategoryName = "No Categories Available" } };
             }
 
-            // Pass categories to the view
+            // Create a SelectList properly
             ViewBag.Categories = new SelectList(categories, "CategoryId", "CategoryName");
+
             return View();
         }
-
-
 
         [HttpPost]
         public IActionResult Suggestion(Movie response)
@@ -66,10 +66,13 @@ namespace Mission6_Beardall.Controllers
                 return View("Thanks", response);
             }
 
-            // If validation fails, reload the categories for the dropdown
-            ViewBag.Categories = _context.Categories.ToList();
-            return View(response);
+            // If validation fails, reload the SelectList correctly
+            var categories = _context.Categories.ToList();
+            ViewBag.Categories = new SelectList(categories, "CategoryId", "CategoryName");
+
+            return View("Thanks" ,response);
         }
+
 
         [HttpGet]
         public IActionResult Edit(int id)
@@ -97,33 +100,25 @@ namespace Mission6_Beardall.Controllers
         [HttpPost]
         public IActionResult Edit(Movie updatedInfo)
         {
-            var categories = _context.Categories.ToList();
-            ViewBag.Categories = new SelectList(categories, "CategoryId", "CategoryName", updatedInfo.CategoryId);
+            var existingMovie = _context.Movies.Find(updatedInfo.MovieID);
 
-            if (!ModelState.IsValid)
-            {
-                return View("Suggestion", updatedInfo);
-            }
-
-            var movieToUpdate = _context.Movies.SingleOrDefault(x => x.MovieID == updatedInfo.MovieID);
-            if (movieToUpdate == null)
+            if (existingMovie == null)
             {
                 return NotFound();
             }
 
-            movieToUpdate.Title = updatedInfo.Title;
-            movieToUpdate.CategoryId = updatedInfo.CategoryId;
-            movieToUpdate.Year = updatedInfo.Year;
-            movieToUpdate.Director = updatedInfo.Director;
-            movieToUpdate.Rating = updatedInfo.Rating;
-            movieToUpdate.Edited = updatedInfo.Edited;
-            movieToUpdate.LentTo = updatedInfo.LentTo;
-            movieToUpdate.CopiedToPlex = updatedInfo.CopiedToPlex;
-            movieToUpdate.Notes = updatedInfo.Notes;
+   
+            existingMovie.CategoryId = updatedInfo.CategoryId;
+            existingMovie.Title = updatedInfo.Title;
+            existingMovie.Year = updatedInfo.Year;
+            existingMovie.Director = updatedInfo.Director;
+            existingMovie.Rating = updatedInfo.Rating;
+            existingMovie.Edited = updatedInfo.Edited;
+            existingMovie.LentTo = updatedInfo.LentTo;
+            existingMovie.CopiedToPlex = updatedInfo.CopiedToPlex;
+            existingMovie.Notes = updatedInfo.Notes;
 
-            _context.Update(movieToUpdate);
             _context.SaveChanges();
-
             return RedirectToAction("Collection");
         }
 

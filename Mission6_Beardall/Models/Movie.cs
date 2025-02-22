@@ -11,8 +11,6 @@ namespace Mission6_Beardall.Models
         public string CategoryName { get; set; }  // Category name
     }
 
-
-
     public class Movie
     {
         [Key]
